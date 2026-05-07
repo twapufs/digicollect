@@ -22,6 +22,10 @@ class TokenExpiredError(ApplicationError):
     pass
 
 
+class InvalidAdminKeyError(ApplicationError):
+    pass
+
+
 class MasterCardNotFoundError(ApplicationError):
     def __init__(self, card_id: UUID) -> None:
         super().__init__(f"Master card '{card_id}' not found")

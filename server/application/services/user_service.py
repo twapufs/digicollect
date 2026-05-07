@@ -3,11 +3,13 @@ from uuid import UUID
 import jwt
 
 from application.exceptions import (
+    InvalidAdminKeyError,
     InvalidCredentialsError,
     InvalidTokenError,
     TokenExpiredError,
     UserAlreadyExistsError,
 )
+from core.config import settings
 from core.security import create_access_token, decode_access_token, hash_password, verify_password
 from domain.entities.user import User
 from domain.unit_of_work import AbstractUnitOfWork
@@ -18,7 +20,16 @@ class UserService:
     def __init__(self, uow: AbstractUnitOfWork) -> None:
         self._uow = uow
 
-    def register(self, username: str, password: str, role: Role = Role.collector) -> User:
+    def register(
+        self,
+        username: str,
+        password: str,
+        role: Role = Role.collector,
+        admin_key: str | None = None,
+    ) -> User:
+        if role == Role.admin:
+            if admin_key != settings.admin_registration_key:
+                raise InvalidAdminKeyError()
         if self._uow.users.get_by_username(username):
             raise UserAlreadyExistsError(username)
         user = User.create(username, hash_password(password), role)

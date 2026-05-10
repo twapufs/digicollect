@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from api.dependencies import get_master_card_service, require_admin
+from api.dependencies import get_current_user, get_master_card_service, require_admin
 from api.v1.schemas.master_card import (
     CreateMasterCardRequest,
     MasterCardResponse,
@@ -35,20 +35,20 @@ def create_master_card(
 
 @router.get("/", response_model=list[MasterCardResponse])
 def list_master_cards(
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
     service: MasterCardService = Depends(get_master_card_service),
 ) -> list[MasterCardResponse]:
-    return [MasterCardResponse.from_entity(c) for c in service.list_all(current_user)]
+    return [MasterCardResponse.from_entity(c) for c in service.list_all()]
 
 
 @router.get("/{card_id}", response_model=MasterCardResponse)
 def get_master_card(
     card_id: UUID,
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
     service: MasterCardService = Depends(get_master_card_service),
 ) -> MasterCardResponse:
     try:
-        card = service.get(current_user, card_id)
+        card = service.get(card_id)
     except MasterCardNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
     return MasterCardResponse.from_entity(card)

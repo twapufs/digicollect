@@ -28,17 +28,13 @@ class MasterCardService:
         self._uow.commit()
         return card
 
-    def get(self, actor: User, card_id: UUID) -> MasterCard:
-        if not actor.is_admin():
-            raise InsufficientPermissionsError("Only admins can view master cards")
+    def get(self, card_id: UUID) -> MasterCard:
         card = self._uow.master_cards.get(card_id)
         if not card:
             raise MasterCardNotFoundError(card_id)
         return card
 
-    def list_all(self, actor: User) -> list[MasterCard]:
-        if not actor.is_admin():
-            raise InsufficientPermissionsError("Only admins can list master cards")
+    def list_all(self) -> list[MasterCard]:
         return self._uow.master_cards.list()
 
     def update(

@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          ADMIN_REGISTRATION_KEY: ${{ secrets.ADMIN_REGISTRATION_KEY }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,JWT_SECRET_KEY,ADMIN_REGISTRATION_KEY
+          script: |
+            set -e
+            cd ${{ vars.DEPLOY_PATH }}
+            git pull origin master
+
+            printf 'POSTGRES_DB=%s\n'            "$POSTGRES_DB"            >  .env
+            printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"          >> .env
+            printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"      >> .env
+            printf 'JWT_SECRET_KEY=%s\n'         "$JWT_SECRET_KEY"         >> .env
+            printf 'ADMIN_REGISTRATION_KEY=%s\n' "$ADMIN_REGISTRATION_KEY" >> .env
+
+            docker compose up --build -d --remove-orphans
+            docker image prune -f

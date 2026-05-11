@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-digicollect}
+      POSTGRES_USER: ${POSTGRES_USER:-digicollect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-digicollect}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-digicollect}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-digicollect}:${POSTGRES_PASSWORD:-digicollect}@db:5432/${POSTGRES_DB:-digicollect}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ADMIN_REGISTRATION_KEY: ${ADMIN_REGISTRATION_KEY}
+      AUTO_DB_INIT: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    build: ./client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:

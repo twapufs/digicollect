@@ -101,7 +101,9 @@ jobs:
             printf 'SERVER_IMAGE=%s:%s\n'        "$SERVER_IMAGE" "$IMAGE_TAG" >> .env
             printf 'CLIENT_IMAGE=%s:%s\n'        "$CLIENT_IMAGE" "$IMAGE_TAG" >> .env
 
-            docker compose up -d --remove-orphans
+            unset SERVER_IMAGE
+            unset CLIENT_IMAGE
+            docker compose up --env-file .env -d --remove-orphans
 
   healthcheck:
     name: Health Check

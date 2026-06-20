@@ -79,11 +79,13 @@ jobs:
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
           SERVER_IMAGE: ${{ needs.build.outputs.server_image }}
           CLIENT_IMAGE: ${{ needs.build.outputs.client_image }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,JWT_SECRET_KEY,ADMIN_REGISTRATION_KEY,IMAGE_TAG,SERVER_IMAGE,CLIENT_IMAGE
+          envs: POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,JWT_SECRET_KEY,ADMIN_REGISTRATION_KEY,IMAGE_TAG,SERVER_IMAGE,CLIENT_IMAGE,GHCR_ACTOR,GHCR_TOKEN
           script: |
             set -e
             cd ${{ vars.DEPLOY_PATH }}
@@ -165,8 +167,6 @@ jobs:
             fi
 
             echo "Rolling back to $PREV_SERVER_IMAGE and $PREV_CLIENT_IMAGE ..."
-
-            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
 
             printf 'POSTGRES_DB=%s\n'            "$POSTGRES_DB"            >  .env
             printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"          >> .env

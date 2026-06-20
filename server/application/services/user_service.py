@@ -8,6 +8,7 @@ from application.exceptions import (
     InvalidTokenError,
     TokenExpiredError,
     UserAlreadyExistsError,
+    UsernameCannotBeEmpty,
 )
 from core.config import settings
 from core.security import create_access_token, decode_access_token, hash_password, verify_password
@@ -27,6 +28,8 @@ class UserService:
         role: Role = Role.collector,
         admin_key: str | None = None,
     ) -> User:
+        if username.strip() == "":
+            raise UsernameCannotBeEmpty()
         if role == Role.admin:
             if admin_key != settings.admin_registration_key:
                 raise InvalidAdminKeyError()

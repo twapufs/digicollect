@@ -10,6 +10,10 @@ class UserAlreadyExistsError(ApplicationError):
         super().__init__(f"User '{username}' already exists")
 
 
+class UsernameCannotBeEmpty(ApplicationError):
+    pass
+
+
 class InvalidCredentialsError(ApplicationError):
     pass
 

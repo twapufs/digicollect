@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from api.dependencies import get_user_service
 from api.v1.schemas.token import Token
 from api.v1.schemas.user import RegisterRequest, UserResponse
-from application.exceptions import InvalidAdminKeyError, InvalidCredentialsError, UserAlreadyExistsError
+from application.exceptions import InvalidAdminKeyError, InvalidCredentialsError, UserAlreadyExistsError, UsernameCannotBeEmpty
 from application.services.user_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -37,4 +37,6 @@ def register(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid admin registration key")
     except UserAlreadyExistsError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+    except UsernameCannotBeEmpty:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username cannot be empty")
     return UserResponse.from_entity(user)

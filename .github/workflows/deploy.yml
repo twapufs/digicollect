@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.version }}
-      server_image: ${{ steps.server_image.outputs.name }}:${{ steps.meta.outputs.version }}
-      client_image: ${{ steps.client_image.outputs.name }}:${{ steps.meta.outputs.version }}
+      server_image: ${{ steps.server_image.outputs.name }}
+      client_image: ${{ steps.client_image.outputs.name }}
 
     steps:
       - name: Checkout

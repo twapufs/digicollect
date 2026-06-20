@@ -117,7 +117,7 @@ jobs:
           URL="${{ vars.HEALTHCHECK_URL }}"
           echo "Polling $URL ..."
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || true)
+            STATUS=$(curl -s -k -o /dev/null -w "%{http_code}" "$URL" || true)
             echo "Attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
               echo "Service is healthy."

@@ -103,7 +103,7 @@ jobs:
 
             unset SERVER_IMAGE
             unset CLIENT_IMAGE
-            docker compose up --env-file .env -d --remove-orphans
+            docker compose up -d --remove-orphans
 
   healthcheck:
     name: Health Check

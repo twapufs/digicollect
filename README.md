@@ -47,30 +47,6 @@ digicollect/
 - `POST /collection/` — забрать карточку (тело: `master_card_id`)
 - `DELETE /collection/{id}` — вернуть карточку из коллекции
 
-## Запуск через Docker Compose
-
-Это основной способ запуска всего приложения целиком.
-
-Скопируйте `.env.example` в `.env` и задайте секреты:
-
-```
-cp .env.example .env
-```
-
-Обязательно замените значения `JWT_SECRET_KEY` и `ADMIN_REGISTRATION_KEY` на собственные. Затем запустите:
-
-```
-docker compose up --build
-```
-
-Приложение будет доступно на `http://localhost`. Документация API — на `http://localhost/api/v1/docs`.
-
-Для остановки:
-
-```
-docker compose down
-```
-
 ## Локальный запуск бэкенда
 
 Требуется Python 3.12+ и [uv](https://docs.astral.sh/uv/).

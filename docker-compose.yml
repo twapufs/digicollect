@@ -15,7 +15,7 @@ services:
       retries: 5
 
   server:
-    build: ${SERVER_IMAGE}
+    image: ${SERVER_IMAGE}
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-digicollect}:${POSTGRES_PASSWORD:-digicollect}@db:5432/${POSTGRES_DB:-digicollect}
@@ -27,7 +27,7 @@ services:
         condition: service_healthy
 
   nginx:
-    build: ${CLIENT_IMAGE}
+    image: ${CLIENT_IMAGE}
     restart: unless-stopped
     ports:
       - "80:80"
